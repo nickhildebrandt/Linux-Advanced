@@ -1,0 +1,729 @@
+.\" vim:fileencoding=utf-8:ft=nroff:foldmethod=marker
+.\" ! pdfmom -G -t -mpic -Kutf8 "%" > "%:r.pdf"
+.TITLE "Linux Advanced"
+.SUBTITLE "Boot, Prozesse, Shell und Netzwerk"
+.AUTHOR "Nick Hildebrandt"
+.MISC "Linux Advanced" "Siemens Energy"
+.COPYRIGHT " \*[$AUTHOR] 2025"
+.
+.\": {{{ Präsentation einrichten
+
+.PDF_TITLE "\*[$TITLE]"
+.DOCTYPE SLIDES \
+  ASPECT 16:9 \
+  HEADER "\*[$MISC_1]" "" "\*[$MISC_2]" \
+  FOOTER "" "" "\*S[+2]\*[SLIDE#]\*S[-2]"
+.NEWCOLOR red       #900000
+.NEWCOLOR blue      #00007b
+.HEADER_COLOR       red
+.HEADER_RULE
+.FOOTER_RULE off
+.T_MARGIN 100p
+.L_MARGIN 50p
+.R_MARGIN 50p
+.B_MARGIN 35p
+.FOOTER_MARGIN 30p
+.
+.HEADING_STYLE 1 \
+    COLOR blue \
+    SPACE_AFTER
+.
+.COVER TITLE SUBTITLE MISC COPYRIGHT
+.
+.START
+.\": }}}
+.
+.\": Ein bisschen was über mich {{{
+.HEADING 1 "Ein bisschen was über mich"
+.SPACE
+.BOX PI
+.PS
+C: ellipse "Nick Hildebrandt"  "Bitte du/Nick" wid 2 ht 1
+
+arrow up .8 from C.n; "Duali für Technische Informatik" above
+arrow up right from C.ne; "Siemens Energy Berlin (Schaltwerk)" ljust above
+arrow up left from C.nw; "Linux Daily Driver seit 2018" rjust above
+
+arrow left .8 from C.w; "Diverse Bauprojekte " rjust
+arrow right .8 from C.e; " Brandenburger seit 19 Jahren" ljust
+
+arrow down .8 from C.s; "Linux Server & Netzwerk Selfhosting seit 2019" below
+arrow down right from C.se; "Embedded Systems & Mikrocontroller" ljust below
+arrow down left from C.sw; "C-Programmierung" rjust below
+.PE
+.BOX OFF
+.\": }}}
+.
+.\": Etwas über euch {{{
+.NEWSLIDE
+.HEADING 1 "Etwas über euch"
+.SPACE
+.BOX PIC
+.PS
+H: box "Name, Alter, Werk, Interessen / Hobbys ..." wid 4
+arrow down left from H.b; box "Vorerfahrung mit Linux" wid 3
+arrow down right from H.b; box "Erwartungen an diesen Kurs" wid 3
+.PE
+.BOX OFF
+.\": }}}
+.
+.\": Was noch wichtig ist {{{
+.NEWSLIDE
+.HEADING 1 "Was noch wichtig ist"
+.SPACE
+.LIST
+.ITEM 10p
+Bitte immer \*[BOLDER]SOFORT FRAGEN\*[BOLDERX] wenn etwas unverständlich ist
+.ITEM 10p
+Nur die \*[BOLDER]Übungsaufgaben sind klausurrelevant\*[BOLDERX]
+.ITEM 10p
+Alle Kursdaten sind online: \*[BOLDER]https://github.com/nickhildebrandt/Linux-Advanced\*[BOLDERX]
+.ITEM 10p
+Meine E-Mail auch für die Zukunft: \*[BOLDER]nick.hildebrandt@siemens-energy.com\*[BOLDERX]
+.ITEM 10p
+Bitte an das \*[BOLDER]Erstellen der Befehlsreferenz\*[BOLDERX] für den Test denken
+.LIST OFF
+\": }}}
+.
+.\": Was ist bekannt? {{{
+.NEWSLIDE
+.HEADING 1 "Was ist bekannt?"
+.SPACE
+.BOX PIC
+.PS
+C: ellipse "Linux" wid 2
+
+arrow up .8 from C.n; "Efi/Bios" above
+arrow up right from C.ne; "Shell" ljust above
+arrow up left from C.nw; "Desktop-Umgebung" rjust above
+
+arrow left .8 from C.w; "Distribution " rjust
+arrow right .8 from C.e; " Kernel" ljust
+
+arrow down .8 from C.s; "Filesystem Hierarchy Standard" below
+arrow down right from C.se; "rwx-Prinzip" ljust below
+arrow down left from C.sw; "Paketverwaltung" rjust below
+.PE
+.BOX OFF
+.\": }}}
+.
+.\": Der Linux Bootvorgang {{{
+.NEWSLIDE
+.HEADING 1 "Der Linux Bootvorgang"
+.SPACE
+.BOX PS
+.PS
+box "Hardware Start" "BIOS/UEFI" "POST" wid 3 ht 2
+arrow right
+box "Bootloader" "z.b. GRUB/LILO" "Linux Kernel" wid 3 ht 2
+arrow right
+box "Kernel laden" "vmlinuz &" "initrd" wid 3 ht 2
+arrow right
+box "PID 1 Starten" "Init System" "Systemd" wid 3 ht 2
+arrow right
+box "Systemd Targets" "Festplatten," "Netzwerk usw." wid 3 ht 2
+move to last box.x,-1
+arrow down
+box "User Slice" "User units" wid 3 ht 2
+.PE
+.BOX OFF
+.QUOTE
+Das Init System startet für alle Funktionen (WLAN, Display...) das richtige Programm - \*[BOLDER]einen Prozess\*[BOLDERX]
+.QUOTE OFF
+.\": }}}
+.
+.\": Runnlevel und Systemd Targets {{{
+.NEWSLIDE
+.HEADING 1 "Runnlevel und Systemd Targets"
+.BOX TS
+.TS
+box center nospaces tab(|);
+lB | lB | lB
+- - -
+n | l | l.
+Runnlevel | Modus | Systemd Target
+0 | Herunterfahren                              | poweroff.target
+1 | Einzelbenutzermodus ohne Netzwerk und GUI   | rescue.target
+2 | Mehrbenutzerbetrieb ohne Netzwerk und GUI   | wie rescue.target
+3 | Mehrbenutzerbetrieb ohne GUI                | multi-user.target
+4 | Nicht definiert                             | Nicht definiert
+5 | Mehrbenutzerbetrieb mit GUI                 | graphical.target
+6 | Neustart                                    | reboot.target
+.TE
+.BOX OFF
+.QUOTE
+Runnlevel wurden von \*[BOLDER]Systemd Targets\*[BOLDERX] abgelöst
+.QUOTE OFF
+.QUOTE
+init und runnlevel geht noch: \*[BOLDER]systemctl isolate und systemctl get-default\*[BOLDERX] ist bevorzugt
+.QUOTE OFF
+.\": }}}
+.
+.\": Was ist eigentlich ein Prozess?  {{{
+.NEWSLIDE
+.HEADING 1 "Was ist eigentlich ein Prozess?"
+.BOX PIC
+.PS
+H: box "Prozess = Gerade ausgeführtes Programm" wid 4
+arrow down left from H.b; box "Priorität (nice) Wert" wid 3
+arrow down 1 from H.b; box "Mutterprozess Min. PID 1 (Init)" wid 3
+arrow down from last box.b; box "PID = Prozess Nummer (ID)" wid 3
+arrow down right from H.b; box "Prozess Zustand" wid 3
+.PE
+.BOX OFF
+.\": }}}
+.
+.\": Prozess Zustände {{{
+.NEWSLIDE
+.HEADING 1 "Prozess Zustände"
+.SPACE
+.BOX TS
+.TS
+box center nospaces tab(|);
+lb | lB | lb
+- - -
+c | lb | l.
+Status | Name | Zustand
+R | Running   | Prozess läuft und führt Anweisungen aus
+S | Schlafend | Prozess wartet auf das Eintreten eines Ereignisses, z.B. auf Benutzereingaben
+T | Gestoppt  | Prozess wurde durch ein Signal gestoppt und führt keine Anweisungen aus
+Z | Zombie    | Prozess hat die Ausführung abgeschlossen, wurde nicht von der Mutter getrennt
+.TE
+.BOX OFF
+.QUOTE
+Der Zustand kann in htop in der Spalte \*[BOLDER]S\*[BOLDERX] abgelesen werden
+.QUOTE OFF
+.QUOTE
+Mann kann durch das: \*[BOLDER]Senden von Signalen\*[BOLDERX] den Zustand verändern
+.QUOTE OFF
+.\": }}}
+.
+.\": Prozess Prioritäten (Nice-Wert) {{{
+.NEWSLIDE
+.HEADING 1 "Prozess Prioritäten (Nice-Wert)"
+.BOX PIC
+.PS
+box "Wieviel CPU Zeit bekommt ein Prozess vom Scheduler?" "Standard = 0 nice -n WERT BEFEHL" wid 5 ht 1
+arrow down from last box.b
+line left 3 <-->
+"-20       "
+arrow down; box "Mehr Zeit" "Wichtiger" wid 2 ht 1
+move to last line.s
+line right 3 <-->
+"       +19"
+arrow down; box "Weniger Zeit" "Unwichtiger" wid 2 ht 1
+
+.PE
+.BOX OFF
+.\": }}}
+.
+.\": Prozesse anzeigen - top/htop  {{{
+.NEWSLIDE
+.HEADING 1 "Prozesse anzeigen - top/htop"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK
+Ausgabe von top:
+
+PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM   TIME+   COMMAND
+001 root      20   0  167404  11976   9176 S   0.0   0.1   0:00.39 systemd
+006 root      20   0    3504    364    132 S   0.0   0.0   0:02.73 init
+088 root      20   0    6608   2616   2372 S   0.0   0.0   0:00.02 cron
+139 root      20   0    5496   1036    944 S   0.0   0.0   0:00.00 agetty
+140 root      20   0    5872   1000    912 S   0.0   0.0   0:00.00 agetty
+156 nick      20   0  168144   2908      0 S   0.0   0.0   0:00.00 (sd-pam)
+161 nick      20   0    7196   3428   3136 S   0.0   0.0   0:00.00 bash
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Prozesse anzeigen - ps  {{{
+.NEWSLIDE
+.HEADING 1 "Prozesse anzeigen - ps"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK ADJUST -1
+Ausgabe von ps: Aktuelles TTY bzw. Terminal \*[BOLDER]Was ist der Unterschied?\*[BOLDERX]
+PID   TTY      TIME     CMD
+83888 pts/0    00:00:00 bash
+84079 pts/0    00:00:00 ps
+
+Ausgabe von ps -u BENUTZERNAME: Alle Benutzer Prozesse
+PID  TTY TIME     CMD
+1282 ?\   00:03:50 pipewire
+1286 ?\   00:06:03 firefox
+
+Ausgabe von ps -aux: Alle Prozesse
+USER    PID %CPU %MEM VSZ     RSS  TTY      STAT START   TIME COMMAND
+root    1   0.0  0.0  167780  9016 ?\        Ss   Mär09   0:02 /sbin/init
+root    2   0.0  0.0  0       0    ?\        S    Mär09   0:00 \*[BOLDER][kthreadd]\*[BOLDERX]
+
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Unterschied Terminal - TTY  {{{
+.NEWSLIDE
+.HEADING 1 "Unterschied Terminal - TTY"
+.BOX PIC
+.PS
+box "TTY" wid 2
+arrow down from last box.b; box "Ursprünglich physische Text-Terminals" "Heute virtuelle Terminals" wid 3.5 ht 1
+
+move right 4 up 1.5
+
+box "Terminal" wid 2
+arrow down from last box.b; box "= Konsole:" "Programm das Texteingaben annimmt" "und Ausgaben anzeigt" wid 3.5 ht 1
+
+move left 2 down 0.5
+
+box "Pseudo-Terminal (PTY) - PTS (Pseudo Terminal Slave)" wid 6
+.PE
+.BOX OFF
+.\": }}}
+.
+.\": Vorder- und Hintergrund Prozesse  {{{
+.NEWSLIDE
+.HEADING 1 "Vorder- und Hintergrund Prozesse"
+.SPACE 2
+.BOX PIC
+.PS
+box "Vordergrund Prozesse" wid 2
+arrow down from last box.b; box "Blockieren Ein-Ausgabe" "Standard für jeden Befehl"wid 4 ht 1
+
+move up 1.75 right 3.5
+box "Hintergrund Prozesse" wid 2
+arrow down from last box.b; box "Schreiben in das Terminal" "Befehle können dabei ausgeführt werden" wid 4 ht 1
+.PE
+.BOX OFF
+.\": }}}
+.
+.\": Hintergrund Prozesse erstellen {{{
+.NEWSLIDE
+.HEADING 1 "Hintergrund Prozesse erstellen"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK
+Neue Prozesse:
+BEFEHL \*[BOLDER]&\*[BOLDERX]
+
+Aktive Prozesse:
+1. Schlafen legen mit \*[BOLDER]STRG + Z\*[BOLDERX]
+2. Jobs anzeigen mit jobs
+3. \*[BOLDER]bg JOB_ID\*[BOLDERX] - Hintergrund bzw. \*[BOLDER]fg JOB_ID\*[BOLDERX] - Hintergrund
+
+Beispielausgabe von jobs:
+\*[BOLDER][1]\*[BOLDERX]-  Angehalten              sleep 100
+\*[BOLDER][2]\*[BOLDERX]+  Angehalten              sleep 5055
+
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": PID ermitteln {{{
+.NEWSLIDE
+.HEADING 1 "PID ermitteln"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK
+Manuell nach der Prozess ID (PID) Suchen:
+ps -u BENUTZERNAME
+
+Alle Prozesse mit einem besitzt Namen anzeigen:
+psgrep NAME
+
+Ausgabe von pgrep chromium:
+314473
+375796
+440524
+440756
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Prozesse und Signale {{{
+.NEWSLIDE
+.HEADING 1 "Prozesse und Signale"
+.SPACE
+.BOX PIC
+.PS
+Start: box "Shell: bash" wid 2
+arrow right
+box "Befehl: sleep 100" wid 2
+arrow right
+box "Signal Handler (Optional)" wid 3
+line down from Start.b to last box.x,last box.y-.75  "Signal senden mit Nummer"
+arrow up
+.PE
+.BOX OFF
+.QUOTE
+Unter Linux besitzt jedes Signal eine eindeutige Nummer. Programme können
+Signale anhand dieser Nummern abfangen und entsprechend handeln, um
+beispielsweise beim Beenden noch offene Daten zu speichern und das Programm
+sauber zu beenden.
+.QUOTE OFF
+.\": }}}
+.
+.\": Prozesse beenden (killen) {{{
+.NEWSLIDE
+.HEADING 1 "Prozesse beenden (killen)"
+.BOX TS
+.TS
+box center nospaces tab(|);
+lb | lB | lb
+- - -
+n | lb | l.
+Nummer | Name | Beschreibung
+2  | SIGINT  | Unterbrechung (z.B. mit Strg+C), Programm kann sauber beenden
+15 | SIGTERM | Standardmäßiges Beenden, erlaubt sauberes beenden
+9  | SIGKILL | Erzwingt sofortiges Beenden, keine Bereinigung möglich
+.TE
+.BOX OFF
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK
+Einen Prozesse mit seiner Prozess ID (PID) beenden:
+kill -SIGNAL_NUMMER PID
+
+Alle Prozesse mit einem bestimmten Namen beenden:
+pkill SIGNAL_NUMMER NAME
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Übungsaufgaben – Prozesse unter Linux {{{
+.NEWSLIDE
+.HEADING 1 "Übungsaufgaben – Prozesse unter Linux"
+.SPACE
+.LIST DIGIT
+.ITEM 5p
+Zeige alle laufenden Prozesse mit dem Befehl top an
+.ITEM 5p
+Finde die PID deiner Shell mit dem Befehl pgrep bash heraus
+.ITEM 5p
+Starte den Befehl sleep 60 als Hintergrundprozess
+.ITEM 5p
+Starte den Befehl sleep 30 mit niedriger Priorität mittels nice -n 10 sleep 30
+.ITEM 5p
+Starte sleep 100, pausiere ihn mit STRG+Z und setze ihn dann mit bg im Hintergrund fort
+.ITEM 5p
+Erstelle mit sleep 120 & einen Hintergrundprozess und beende ihn kontrolliert mittels kill -15 PID
+.ITEM 5p
+Starte sleep 300 & und erzwinge mit kill -9 PID ein sofortiges Ende dieses Prozesses
+.LIST OFF
+.\": }}}
+.
+.\": Systemd: Prozess- und Applikationsinfrastruktur API {{{
+.NEWSLIDE
+.HEADING 1 "System: Prozess- und Applikationsinfrastruktur API"
+.SPACE 2
+.BOX PIC
+.PS
+C: ellipse "Systemd (Init)" wid 2
+
+arrow up .8 from C.n; "Prozess Dienste" above
+arrow up right from C.ne; "Netzwerk" ljust above
+arrow up left from C.nw; "Bootloader" rjust above
+
+arrow left .8 from C.w; "Container " rjust
+arrow right .8 from C.e; " Control Groups" ljust
+
+arrow down .8 from C.s; "Mounts" below
+arrow down right from C.se; "Aufgabenplanung" ljust below
+arrow down left from C.sw; "D-BUS API" rjust below
+.PE
+.BOX OFF
+.\": }}}
+.
+.\": Wie funktioniert Systemd? {{{
+.NEWSLIDE
+.HEADING 1 "Wie funktioniert Systemd?"
+.SPACE 2
+.BOX PIC
+.PS
+Start: box "Units" "Ressourcen, die Systemd verwalten kann" wid 4 ht 1
+arrow down left from Start.b; box "Einheitlicher Konfigurations Syntax" wid 4
+arrow down right from Start.b; box "Units = Timer, Services, Mounts, etc." wid 4
+.PE
+.BOX OFF
+.\": }}}
+.
+.\": Beispiel: Services {{{
+.NEWSLIDE
+.HEADING 1 "Beispiel: Services"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE ADJUST -1
+.CODE BREAK
+[Unit]
+Description=Mein einfacher Service
+After=network.target
+
+[Service]
+Type=simple
+Restart=on-failure
+
+# Benutzer und Gruppe, unter denen der Prozess läuft
+User=nick
+Group=nick
+
+# Start- und Stop-Kommandos definieren
+ExecStart=/usr/bin/mein_programm --option wert
+ExecStop=/usr/bin/mein_programm --stop
+
+# Systemverzeichnisse sind schreibgeschützt (/usr, /etc, /boot)
+ProtectSystem=strict # oder ReadWritePaths=RW-ORDNER
+
+# Eigenes /tmp, /dev und Netzwerk
+PrivateTmp=yes
+PrivateDevices=yes
+PrivateNetwork=yes
+
+# Kein sudo oder doas
+NoNewPrivileges=yes
+
+#CPU und RAM begrenzen
+MemoryLimit=500M
+CPUQuota=50%
+
+[Install]
+WantedBy=multi-user.target
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Wo liegen die Konfigurationsdateien? {{{
+.NEWSLIDE
+.HEADING 1 "Wo liegen die Konfigurationsdateien?"
+.BOX PIC
+.PS
+box "1. Admin: /etc/systemd/system/NAME.service|.timer|..." wid 7 ht .4
+arrow down from last box.b; box "2. Temporär: /run/systemd/system/NAME.service|.timer|..." wid 7 ht .4
+arrow down from last box.b; box "3. Pakete: /lib/systemd/system/NAME.service|.timer|..." wid 7 ht .4
+arrow down from last box.b; box "4. Benutzer Session: $HOME/.config/systemd/user/NAME.service|.timer|..." wid 7 ht .4
+.PE
+.BOX OFF
+.\": }}}
+.
+.\": Wie interagiere ich mit einem Service? {{{
+.NEWSLIDE
+.HEADING 1 "Wie interagiere ich mit einem Service?"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE ADJUST -1
+.CODE BREAK
+Wenn eine Unit Konfigurationsdatei verändert wurde: Systemd Neustarten
+# @root
+\*[BOLDER]systemctl daemon-reload\*[BOLDERX]
+
+Service aktivieren
+# @root
+\*[BOLDER]systemctl enable NAME.service\*[BOLDERX]
+
+Service starten
+# @root
+\*[BOLDER]systemctl start NAME.service\*[BOLDERX]
+
+Status Anzeigen
+\*[BOLDER]systemctl status NAME.service\*[BOLDERX]
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Übungsaufgabe: Eigener System Service {{{
+.NEWSLIDE
+.HEADING 1 "Übungsaufgabe: Eigener Systemd Service"
+.QUOTE
+Erstelle und starte mithilfe der Vorlage in /etc/systemd/test.service einen Service für den Befehl sleep infinity
+.QUOTE OFF
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE ADJUST -1
+.CODE BREAK
+[Unit]
+Description=Mein einfacher Service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/sleep infinity
+
+[Install]
+WantedBy=multi-user.target
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.QUOTE ADJUST -1
+Tipp: Du kannst Dateien mit z.B. nano /etc/systemd/system/test.service bearbeiten
+.QUOTE OFF
+.\": }}}
+.
+.\": Aufgabenplanung {{{
+.NEWSLIDE
+.HEADING 1 "Aufgabenplanung"
+.QUOTE
+Mit Cron oder Timer Units kannst du Befehle zu einem bestimmten Zeitpunkt automatisiert ausführen
+.QUOTE OFF
+.TS
+box center nospaces tab(|);
+lb | lB
+- -
+l | l.
+Systemd Timer Units | Crontab
+Steuerung über *.timer und *.service Dateien  | Steuerung über /etc/crontab oder crontab -e
+OnCalendar= für Zeitsteuerung                 | */5 * * * * Syntax für Zeitsteuerung
+Minimale Genauigkeit: 1 Sekunde               | Minimale Genauigkeit: 1 Minute
+Abhängigkeiten über Units möglich             | Keine direkten Abhängigkeiten möglich
+Logging erfolgt über journald                 | Logging meist in separaten Dateien oder per Mail
+Aktivierung: systemctl enable/start           | Automatisch nach Änderung der Crontab aktiv
+Status sichtbar mit systemctl list-timers     | Keine einfache Statusübersicht vorhanden
+.TE
+.\": }}}
+.
+.\": Crontab erstellen {{{
+.NEWSLIDE
+.HEADING 1 "Crontab erstellen"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK ADJUST -1
+crontab -e # Als Benutzer unter dem der Crontab läuft
+Select an editor.  To change later, run 'select-editor'.
+  1. /bin/nano        <---- \*[BOLDER]Am besten nano\*[BOLDERX]
+
+[Minute] [Stunde] [Tag(Monat)] [Monat] [Wochentag] BEFEHL # * = Jede
+
+# Alle zwei Minuten für 10 Sekunden schlafen
+2 * * * * sleep 10
+
+@yearly     Einmal pro Jahr (0 0 1 1 *)
+@monthly    Einmal pro Monat (0 0 1 * *)
+@weekly     Einmal pro Woche (0 0 * * 0)
+@daily      Einmal pro Tag (0 0 * * *)
+@hourly     Einmal pro Stunde (0 * * * *)
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Systemd Timer Units {{{
+.NEWSLIDE
+.HEADING 1 "Systemd Timer Units"
+.SPACE 2
+.BOX PIC
+.PS
+box "Systemd Service" "test.service" wid 2 ht 2
+line right 5 <--> "Jeder Timer hat eine gleichnamige Service-Unit" above
+box "System Timer" "test.timer" wid 2 ht 2
+.PE
+.BOX OFF
+.\": }}}
+.
+.\": Systemd Timer Service erstellen {{{
+.NEWSLIDE
+.HEADING 1 "Systemd Timer Service erstellen"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK
+# @root
+nano /etc/systemd/system/test.service
+[Unit]
+Description=Execute the BASH script /root/test.sh
+
+[Service]
+Type=\*[BOLDER]oneshot\*[BOLDERX]
+ExecStart=/usr/bin/echo "test"
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Systemd Timer Unit erstellen {{{
+.NEWSLIDE
+.HEADING 1 "Systemd Timer Unit erstellen"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK ADJUST -1
+# @root
+nano /etc/systemd/system/test.timer
+[Unit]
+Description=Starte den Systemd Service test.service alle 10 Minuten
+
+[Timer]
+# OnCalendar=daily - Jeden Tag um 00:00 Uhr
+# OnCalendar=hourly - Jede volle Stunde
+# OnCalendar=2025-12-24 18:00:00 - Einmalig am 24. Dezember 2025 um 18:00 Uhr
+# OnCalendar=Fri 13:00:00 - Jeden Freitag um 13:00 Uhr
+OnCalendar=*:0/10:*
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Wie interagiere ich mit einem Timer? {{{
+.NEWSLIDE
+.HEADING 1 "Wie interagiere ich mit einem Timer?"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK
+Alle Timer anzeigen
+# @root
+\*[BOLDER]systemctl list-timers\*[BOLDERX]
+
+Wenn eine Unit Konfigurationsdatei verändert wurde: Systemd Neustarten
+# @root
+\*[BOLDER]systemctl daemon-reload\*[BOLDERX]
+
+Timer aktivieren
+@root
+\*[BOLDER]systemctl enable NAME.timer\*[BOLDERX]
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Übungsaufgabe Aufgabenplanung {{{
+.NEWSLIDE
+.HEADING 1 "Übungsaufgabe: Aufgabenplanung"
+.LIST DIGIT
+.ITEM 10p
+Erstelle mit dem Befehl 'crontab -e' eine Crontab für den Root-Benutzer, die jede Stunde den Befehl 'echo "Hallo Welt"' ausführt.
+.ITEM 10p
+Erstelle einen systemd-Service in der Datei '/etc/systemd/system/test.service',
+der den Befehl 'echo "Hallo Welt"' als oneshot ausführt. Erstelle anschließend
+die gleichnamige Timer-Unit in der Datei '/etc/systemd/system/test.timer' und
+sorge dafür, dass der Timer jede Stunde ausgeführt wird. Aktiviere danach nur
+den Timer und lasse dir anschließend alle aktiven Timer auf dem System
+anzeigen.
+.LIST OFF
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK
+# Wichtige Befehle @root
+crontab -e
+systemctl list-timers
+systemctl daemon-reload
+systemctl enable NAME.timer
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
