@@ -727,3 +727,253 @@ systemctl enable NAME.timer
 .CENTER_BLOCK OFF
 .QUOTE_CENTER
 .\": }}}
+.
+.\": Was ist ein Shell? {{{
+.NEWSLIDE
+.HEADING 1 "Was ist eine Shell?"
+.BOX PIC
+.PS
+circle fill 0.5  rad 1.5 at 0,0
+circle fill 0.2 rad 1 at 0,0
+circle fill 0 "Kernel" rad 0.75 at 0,0
+line right 3 from 0.75,0.5 "API (C Bibliothek)" ljust above
+line right 1 from 1.25,-0.5 "Shell" ljust above
+arrow right; "  Software" ljust
+line down <--> from last line.c; box "Benutzer" wid 1
+.PE
+.BOX OFF
+.\": }}}
+.
+.\": Sh, Bash und Zsh {{{
+.NEWSLIDE
+.HEADING 1 "Sh, Bash und Zsh"
+.BOX TS
+.TS
+box center nospaces tab(|);
+lB | lB | lB | LB
+- - - -
+l | l | l | l.
+Eigenschaft           | sh                | bash                      | zsh
+Standard auf          | Unix, BSD, POSIX  | Linux, älteres macOS      | macOS, Linux, BSD
+POSIX-kompatibel      | Ja                | Teilweise                 | Nein
+sh-kompatibel         | Ja                | Ja (größtenteils)         | Teilweise
+Skripting             | Grundlegend       | Erweiterte Funktionen     | Noch mächtiger
+Autovervollständigung | Einfach           | Besser                    | Sehr fortgeschritten
+Globbing              | Basis (`*`, `?`)  | Erweitert (`**`, `@( )`)  | Sehr mächtig (`<1-100>`)
+.TE
+.BOX OFF
+.QUOTE
+Sh wurde durch POSIX standardisiert und z. B. in dash implementiert, während
+Bash, zsh und fish mehr Funktionen bieten, aber nicht dem Standard folgen.
+.QUOTE OFF
+.QUOTE
+Bash und sh sind der Standard auf Servern, Embedded- und Netzwerkgeräten.
+.QUOTE OFF
+.\": }}}
+.
+.\": Was ist eigentlich POSIX? {{{
+.NEWSLIDE
+.HEADING 1 "Was ist eigentlich POSIX?"
+.SPACE 3
+.QUOTE
+POSIX ist ein Standard für die Umsetzung eines Unix- oder unixähnlichen
+Betriebssystems, der von der IEEE (Institute of Electrical and Electronics
+Engineers) seit 1988 entwickelt wird; er spezifiziert z. B. Shell-Syntax,
+Dateisystem- und Prozessverwaltung, um die Portabilität von Software zwischen
+verschiedenen Unix-Systemen zu gewährleisten.
+.QUOTE OFF
+.\": }}}
+.
+.\": Ein Befehl im Detail {{{
+.NEWSLIDE
+.HEADING 1 "Ein Befehl im Detail"
+.BOX PIC
+.PS
+arrow right 2 "Eingabe (stdin)" above
+box "Befehl = Programm" "cp" wid 2.5 ht 1
+arrow right
+box "Option / Flag 'n'" "-n" wid 1.8 ht 1
+arrow right
+box "Argument 1" "'test'" wid 1.8 ht 1
+arrow right 2 "Exit Code" "0 = Erfolg"
+arrow right up 1 from last box.r; box "Standard Ausgabe" "stdout (1)" wid 2.2 ht 1
+arrow right down 1 from 2nd last box.r; box "Standard Error" "stderr (2)" wid 2.2 ht 1
+.PE
+.BOX OFF
+.\": }}}
+.
+.\": Was ist ein Shell Skript? {{{
+.NEWSLIDE
+.HEADING 1 "Was ist ein Shell Skript?"
+.SPACE
+.QUOTE
+Ein Shell-Skript ist eine Aneinanderreihung von Shell-Befehlen in einer
+Textdatei, die von der Shell interpretiert ein neues Programm ergibt.
+.QUOTE OFF
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK
+#!/bin/bash <-- Shebang = Welche Shell
+# Datei: test.sh <-- Kommentar
+echo "Hallo Welt" <-- Befehl
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.SPACE
+.QUOTE
+Shell Skripte werden zur Automatisierung und Beschreibung von z.B. Server Konfiguration genutzt
+.QUOTE OFF
+.QUOTE
+\*[BOLDER]Bevor wir das Skript ausführen (`./NAME`), muss es mit `chmod +x NAME` ausführbar gemacht werden\*[BOLDERX]
+.QUOTE OFF
+.\": }}}
+.
+.\": Variablen {{{
+.NEWSLIDE
+.HEADING 1 "Variablen"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE ADJUST -1
+.CODE BREAK
+#!/bin/bash
+
+# Zeichenkette (String = Standard)
+text="Hallo Bash"
+echo "Text: ${text}"
+
+# Ganze Zahl (Integer) => (declare -i)
+zahl=42
+echo "Text: ${zahl}"
+
+# Array (declare -a)
+arr=("Apfel" "Birne" "Kirsche")
+echo "Array: ${arr[0]}, ${arr[1]}, ${arr[2]}"
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Ausgabe von Befehlen in Variablen {{{
+.NEWSLIDE
+.HEADING 1 "Ausgabe von Befehlen in Variablen"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE ADJUST -1
+.CODE BREAK
+#!/bin/bash
+
+# String zuweisen
+datum=$(echo "Inhalt")
+echo "Datum: ${datum}"
+
+# Array (Pro Zeile / Tab)
+dateien=($(ls))
+echo "Datei: ${dateien[0]}"
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Nutzereingaben: stdin {{{
+.NEWSLIDE
+.HEADING 1 "Nutzereingaben: stdin"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE ADJUST
+.CODE BREAK
+#!/bin/bash
+echo "Name?:"
+read eingabe
+echo "Sie sind: ${eingabe}"
+
+# Aufruf
+# Über eine Pipe
+echo "Hallo Welt" | skript.sh <-- Name der skript Datei
+# oder einfach über die Tastatur antworten + ENTER
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.SPACE
+.QUOTE
+Eine Unix-Pipe (|) leitet die Ausgabe eines Befehls als Eingabe (stdin) an einen anderen Befehl weiter.
+.QUOTE OFF
+.\": }}}
+.
+.\": Ausgaben: stdout und stderr {{{
+.NEWSLIDE
+.HEADING 1 "Ausgaben: stdout und stderr"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE ADJUST
+.CODE BREAK
+#!/bin/bash
+
+# Normale Info Ausgabe
+echo "Test"
+
+# Fehler ausgeben
+# 1 (stdout) = Ausgabe von echo nehmen und nach 2 (sterr) umleiten
+echo "Error!!!" 1>&2
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.SPACE
+.QUOTE
+Die Trennung von stdout und stderr erleichtert Fehleranalyse, Logging und gezielte Umleitungen
+.QUOTE OFF
+.\": }}}
+.
+.\": Ausgaben an Dateien {{{
+.NEWSLIDE
+.HEADING 1 "Ausgaben an Dateien"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE ADJUST
+.CODE BREAK
+#!/bin/bash
+
+# Dateiinhalt überschreiben
+echo "Test" > datei
+
+# Dateiinhalt behalten und Text hinzufügen
+echo "Test2" >> datei
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.SPACE
+.QUOTE
+Das Umleiten von Ausgaben in Dateien ist nützlich für Logging, da es Prozesse
+dokumentiert und die Fehlersuche erleichtert.
+.QUOTE OFF
+.\": }}}
+.
+.\": Übungsaufgabe: Benutzer-Log {{{
+.NEWSLIDE
+.HEADING 1 "Übungsaufgabe: Benutzer-Log"
+.QUOTE_LEFT
+.QUOTE
+Schreibe ein Bash-Skript, das:
+.QUOTE OFF
+.LIST DIGIT
+.ITEM 10p
+Den Benutzer nach seinem Namen fragt und die Eingabe in einer Variablen speichert
+.ITEM 10p
+Das aktuelle Datum und die Uhrzeit speichert
+.ITEM 10p
+Diese Informationen in eine Datei schreibt, und den Benutzer freundlich begrüßt
+.LIST OFF
+.CENTER_BLOCK
+.QUOTE ADJUST
+.CODE BREAK
+$ ./benutzerlog.sh
+Wie heißt du?
+> Alex
+Hallo Alex! Deine Anmeldung wurde gespeichert.
+
+$ cat benutzerlog.txt
+Alex hat sich am 2025-03-20 um 14:35:12 angemeldet.
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
