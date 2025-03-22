@@ -977,3 +977,82 @@ Alex hat sich am 2025-03-20 um 14:35:12 angemeldet.
 .CENTER_BLOCK OFF
 .QUOTE_CENTER
 .\": }}}
+.
+.\": If Kontrollstruktur und Fehlerauswertung {{{
+.NEWSLIDE
+.HEADING 1 "If Kontrollstruktur und Fehlerauswertung"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE ADJUST
+.CODE BREAK ADJUST -1
+#!/bin/bash
+
+# Sleep ohne Zeit verursacht einen Fehler
+sleep
+
+# Den Rückgabewert kann mann über ${?} auslesen
+echo ${?} # = 1 (Fehler) 0 wäre OK
+
+# Mit if überprüfen
+if $(sleep); then
+    echo "Alles Okay"
+else
+    echo "NEIN!"
+fi
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": If Kontrollstruktur Vergleiche {{{
+.NEWSLIDE
+.HEADING 1 "If Kontrollstruktur Vergleiche"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK ADJUST -1
+if [[ ${?} == 1 ]]; then
+    echo "Error"
+fi
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.TS
+box center nospaces tab(:);
+lB : lB : lB
+- - -
+l : l : l.
+Vergleich           : Boolisch              : Arithmetisch
+Gleich              : $a == $b              : $a -eq $b
+Ungleich            : $a != $b              : $a -ne $b
+Größer als          : $a > $b               : $a -gt $b
+Größer oder gleich  : $a >= $b              : $a -ge $b
+Kleiner als         : $a < $b               : $a -lt $b
+Kleiner oder gleich : $a <= $b              : $a -le $b
+Logisches UND       : $a -gt 0 && $b -gt 0  : $a -gt 0 -a $b -gt 0
+Logisches ODER      : $a -gt 0 || $b -gt 0  : $a -gt 0 -o $b -gt 0
+.TE
+.\": }}}
+.
+.\": Switch-Case für Argumente {{{
+.NEWSLIDE
+.HEADING 1 "Switch-Case für Argumente"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK
+${0} = Programm Name => test.sh
+${1} = Ersten Argument usw.
+
+case ${1} in
+    hallo)
+        echo "Hallo"
+        ;;
+    *)
+        echo "Wenn nichts zutrifft"
+        ;;
+esac
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
