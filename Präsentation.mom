@@ -903,7 +903,34 @@ echo "${Max Mustermann}"
 .CENTER_BLOCK OFF
 .QUOTE_CENTER
 .\": }}}
-
+.
+.\": Umgebungsvariablen {{{
+.NEWSLIDE
+.HEADING 1 "Umgebungsvariablen"
+.QUOTE
+Umgebungsvariablen enthalten Informationen über den aktuellen Zustand des
+Systems und der Benutzerumgebung.
+.QUOTE OFF
+.BOX TS
+.TS
+box center nospaces tab(|);
+lB | lB
+- -
+l | l.
+Variable            | Bedeutung
+${PATH}             | Suchpfad für ausführbare Programme
+${HOME}             | Pfad zum Home-Verzeichnis des aktuellen Benutzers
+${USER}             | Aktuell angemeldeter Benutzername
+${SHELL}            | Pfad zur verwendeten Login-Shell (z. B. /bin/bash)
+${PWD}              | Aktuelles Arbeitsverzeichnis
+${OLDPWD}           | Vorheriges Arbeitsverzeichnis (z. B. nach `cd -`)
+${LANG}             | Standardsprache und Zeichensatz (z. B. en_US.UTF-8)
+${LC_ALL}           | Überschreibt alle LC_* Sprach-/Regionseinstellungen
+${DISPLAY}          | X11 Display-Nummer (z. B. :0 für grafische Sitzungen)
+${XDG_SESSION_TYPE} | Typ der aktuellen Sitzung (z. B. tty, x11, wayland)
+.TE
+.BOX OFF
+.\": }}}
 .
 .\": Nutzereingaben: stdin {{{
 .NEWSLIDE
@@ -976,6 +1003,27 @@ echo "Test2" >> datei
 Das Umleiten von Ausgaben in Dateien ist nützlich für Logging, da es Prozesse
 dokumentiert und die Fehlersuche erleichtert.
 .QUOTE OFF
+.\": }}}
+.
+.\": Besonde Orte für I/O {{{
+.NEWSLIDE
+.HEADING 1 "Das Nichts - /dev/null"
+.SPACE 2
+.QUOTE
+/dev/null - Void des Kernels – alles, was hier landet, verschwindet
+.QUOTE OFF
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK
+# Ausgabe verstecken
+echo "Ich bin nicht zu sehen" > /dev/null
+
+# Fehler nicht ausgeben
+find / -name datei 2>/dev/null
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
 .\": }}}
 .
 .\": Übungsaufgabe: Benutzer-Log {{{
@@ -1201,4 +1249,25 @@ Das Skript sollte später um \*[BOLDER]Logging und Netzwerkbefehle\*[BOLDERX] er
 .ITEM 10p
 Die \*[BOLDER]nächsten Nachmittage\*[BOLDERX] stehen dafür zur Verfügung
 .LIST OFF
+.\": }}}
+.
+.\": Logging {{{
+.NEWSLIDE
+.HEADING 1 "Logging"
+.QUOTE
+Logging ist das automatische Aufzeichnen von Ereignissen, Abläufen oder Fehlern
+in einem System, um deren Verhalten nachvollziehen und analysieren zu können.
+.QUOTE OFF
+.BOX PIC
+.PS
+box "Kernel" wid 2
+arrow down from last box.b; box "Hardwareinformation" "dmesg" wid 2 ht 1
+move up 1.75 right 1.5
+box "Service" wid 2
+arrow down from last box.b; box "Prozessinformationen" "journalctl" wid 2 ht 1
+move up 1.75 right 1.5
+box "Global" wid 2
+arrow down from last box.b; box "Custom Logging" "/var/log" wid 2 ht 1
+.PE
+.BOX OFF
 .\": }}}
