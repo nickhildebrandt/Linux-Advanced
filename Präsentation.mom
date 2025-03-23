@@ -119,7 +119,7 @@ box "Bootloader" "z.b. GRUB/LILO" "Linux Kernel" wid 3 ht 2
 arrow right
 box "Kernel laden" "vmlinuz &" "initrd" wid 3 ht 2
 arrow right
-box "PID 1 Starten" "Init System" "Systemd" wid 3 ht 2
+box "PID 1 starten" "Init System" "Systemd" wid 3 ht 2
 arrow right
 box "Systemd Targets" "Festplatten," "Netzwerk usw." wid 3 ht 2
 move to last box.x,-1
@@ -336,7 +336,7 @@ Beispielausgabe von jobs:
 Manuell nach der Prozess ID (PID) Suchen:
 ps -u BENUTZERNAME
 
-Alle Prozesse mit einem besitzt Namen anzeigen:
+Alle Prozesse mit einem bestimmten Namen anzeigen:
 psgrep NAME
 
 Ausgabe von pgrep chromium:
@@ -391,7 +391,7 @@ Nummer | Name | Beschreibung
 .CENTER_BLOCK
 .QUOTE
 .CODE BREAK
-Einen Prozesse mit seiner Prozess ID (PID) beenden:
+Einen Prozess mit seiner Prozess ID (PID) beenden:
 kill -SIGNAL_NUMMER PID
 
 Alle Prozesse mit einem bestimmten Namen beenden:
@@ -425,7 +425,7 @@ Starte sleep 300 & und erzwinge mit kill -9 PID ein sofortiges Ende dieses Proze
 .
 .\": Systemd: Prozess- und Applikationsinfrastruktur API {{{
 .NEWSLIDE
-.HEADING 1 "System: Prozess- und Applikationsinfrastruktur API"
+.HEADING 1 "Systemd: Prozess- und Applikationsinfrastruktur API"
 .SPACE 2
 .BOX PIC
 .PS
@@ -774,7 +774,11 @@ Bash und sh sind der Standard auf Servern, Embedded- und Netzwerkgeräten.
 .\": Was ist eigentlich POSIX? {{{
 .NEWSLIDE
 .HEADING 1 "Was ist eigentlich POSIX?"
-.SPACE 3
+.SPACE 2
+.QUOTE
+\*[BOLDER]P\*[BOLDERX]ortable \*[BOLDER]O\*[BOLDERX]perating \*[BOLDER]S\*[BOLDERX]ystem \*[BOLDER]I\*[BOLDERX]nterface
+X = Uni\*[BOLDER]x\*[BOLDERX]
+.QUOTE OFF
 .QUOTE
 POSIX ist ein Standard für die Umsetzung eines Unix- oder unixähnlichen
 Betriebssystems, der von der IEEE (Institute of Electrical and Electronics
@@ -790,7 +794,7 @@ verschiedenen Unix-Systemen zu gewährleisten.
 .BOX PIC
 .PS
 arrow right 2 "Eingabe (stdin)" above
-box "Befehl = Programm" "cp" wid 2.5 ht 1
+box "Befehl = Programm" "echo" wid 2.5 ht 1
 arrow right
 box "Option / Flag 'n'" "-n" wid 1.8 ht 1
 arrow right
@@ -874,6 +878,32 @@ echo "Datei: ${dateien[0]}"
 .CENTER_BLOCK OFF
 .QUOTE_CENTER
 .\": }}}
+.
+.\": Sichere Interpolation von Variablen und Befehlen {{{
+.NEWSLIDE
+.HEADING 1 "Sichere Interpolation von Variablen und Befehlen"
+.QUOTE
+Ohne Anführungszeichen werden Variablen mit Leerzeichen in mehrere Teile
+Variablen in geschweiften Klammern schützen zusätzlich vor falscher
+Interpretation bei zusammengesetzten Namen wie ${user}name
+.QUOTE OFF
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE ADJUST -1
+.CODE BREAK
+#!/bin/bash
+
+# Bei Befehlen
+echo "$(hostname)"
+
+# Bei Variablen (statt $name)
+name="Max Mustermann"
+echo "${Max Mustermann}"
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+
 .
 .\": Nutzereingaben: stdin {{{
 .NEWSLIDE
@@ -1004,6 +1034,33 @@ fi
 .QUOTE_CENTER
 .\": }}}
 .
+.\": Im Fehlerfall Skript abbrechen {{{
+.NEWSLIDE
+.HEADING 1 "Im Fehlerfall Skript abbrechen"
+.QUOTE
+Standardmäßig führt ein Bash-Skript alle Befehle bis zum Ende aus, auch wenn
+einer davon mit einem Fehler (Statuscode ≠ 0) endet. Um das zu verhindern, kann
+am Anfang des Skripts folgende Option gesetzt werden
+.QUOTE OFF
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK ADJUST -1
+#!/bin/bash
+
+# Skript abbrechen, wenn ein Befehl fehlschlägt (Exit-Code ≠ 0)
+set -e
+
+# Fehler, wenn auf eine nicht gesetzte Variable zugegriffen wird
+set -u
+
+# Fehler, wenn ein Befehl in einer Pipeline fehlschlägt
+set -o pipefail
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
 .\": If Kontrollstruktur Vergleiche {{{
 .NEWSLIDE
 .HEADING 1 "If Kontrollstruktur Vergleiche"
@@ -1055,4 +1112,93 @@ esac
 .QUOTE OFF
 .CENTER_BLOCK OFF
 .QUOTE_CENTER
+.\": }}}
+.
+.\": While Schleife {{{
+.NEWSLIDE
+.HEADING 1 "While Schleife"
+.SPACE 1
+.QUOTE
+Solange die Bedingung der while-Schleife true ist, werden die Befehle in ihr ausgeführt.
+.QUOTE OFF
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK
+while [[ ${1} ]]; do # Eine Variable ist true wenn sie nicht leer ist
+    echo ${1}
+    shift # shift verschiebt die Positionsparameter ${1}, ${2}, … nach links
+          # ${1} => ${2} usw.
+done
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": For Schleife {{{
+.NEWSLIDE
+.HEADING 1 "For Schleife"
+.SPACE 1
+.QUOTE
+For-Schleifen dienen dazu, über Listen (z. B. von Dateien) zu iterieren oder
+eine Aktion mehrfach auszuführen.
+.QUOTE OFF
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK
+# ls * - Alle Dateien im aktuellen Ordner ausgeben
+for DATEI in "$(ls *)"; do
+    echo "Datei gefunden: ${DATEI}"
+done
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Übungsaufgabe: Eigenes Bash Skript {{{
+.NEWSLIDE
+.HEADING 1 "Übungsaufgabe: Eigenes Bash Skript"
+.QUOTE_LEFT
+.QUOTE
+Wähle eine der folgenden Aufgaben oder eine eigene Idee:
+.QUOTE OFF
+.QUOTE_CENTER
+.LIST DIGIT
+.ITEM 10p
+Überlege dir ein Skript, das regelmäßig (z. B. alle 10 Sekunden oder via Cron)
+deinen Rechner überwacht: z. B. wie viele Prozesse du hast, was gerade
+besonders viel CPU verbraucht, oder wie viele Tabs Firefox offen hat.  Lass dir
+die Infos cool anzeigen – vielleicht mit Farben oder Emojis. Vielleicht
+schreibst du sie auch in ein Logfile.
+.ITEM 10p
+Schreib ein interaktives Bash-Textadventure mit Verzweigungen (read, case, if).
+Am Anfang wird ein „Prozessname“ genannt (z. B. Schattenprozess X), den man
+sich merken muss.  Im Laufe der Geschichte triffst du Entscheidungen (links,
+rechts, kämpfen, fliehen ...), und am Ende musst du den richtigen Namen
+eingeben, um den Endboss zu besiegen.
+.ITEM 10p
+Du bist Linux-Admin und dein Rechner wird von Chaosprozessen überrannt.  Bau
+dir ein Bash-Skript + systemd-Service, das beim Booten oder einmal täglich
+automatisch alte Prozesse killt, unnötige Logdateien löscht, oder dich warnt,
+wenn etwas „unordentlich“ ist.
+.LIST OFF
+.\": }}}
+.
+.\": Bearbeitungshinweis {{{
+.NEWSLIDE
+.HEADING 1 "Bearbeitungshinweis"
+.SPACE 2
+.LIST
+.ITEM 10p
+\*[BOLDER]Googeln und KI\*[BOLDERX] sind ausdrücklich erwünscht
+.ITEM 10p
+Ihr könnt mir jederzeit alle \*[BOLDER]Fragen stellen\*[BOLDERX] – ich helfe gerne
+.ITEM 10p
+Bringt \*[BOLDER]eigene Ideen\*[BOLDERX] ein und probiert viel aus
+.ITEM 10p
+Das Skript sollte später um \*[BOLDER]Logging und Netzwerkbefehle\*[BOLDERX] erweitert werden können
+.ITEM 10p
+Die \*[BOLDER]nächsten Nachmittage\*[BOLDERX] stehen dafür zur Verfügung
+.LIST OFF
 .\": }}}
