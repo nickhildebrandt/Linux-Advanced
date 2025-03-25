@@ -132,16 +132,16 @@ Das Init System startet für alle Funktionen (WLAN, Display...) das richtige Pro
 .QUOTE OFF
 .\": }}}
 .
-.\": Runnlevel und Systemd Targets {{{
+.\": Runlevel und Systemd Targets {{{
 .NEWSLIDE
-.HEADING 1 "Runnlevel und Systemd Targets"
+.HEADING 1 "Runlevel und Systemd Targets"
 .BOX TS
 .TS
 box center nospaces tab(|);
 lB | lB | lB
 - - -
 n | l | l.
-Runnlevel | Modus | Systemd Target
+Runlevel | Modus | Systemd Target
 0 | Herunterfahren                              | poweroff.target
 1 | Einzelbenutzermodus ohne Netzwerk und GUI   | rescue.target
 2 | Mehrbenutzerbetrieb ohne Netzwerk und GUI   | wie rescue.target
@@ -152,7 +152,7 @@ Runnlevel | Modus | Systemd Target
 .TE
 .BOX OFF
 .QUOTE
-Runnlevel wurden von \*[BOLDER]Systemd Targets\*[BOLDERX] abgelöst
+Runlevel wurden von \*[BOLDER]Systemd Targets\*[BOLDERX] abgelöst
 .QUOTE OFF
 .QUOTE
 init und runnlevel geht noch: \*[BOLDER]systemctl isolate und systemctl get-default\*[BOLDERX] ist bevorzugt
@@ -337,7 +337,7 @@ Manuell nach der Prozess ID (PID) Suchen:
 ps -u BENUTZERNAME
 
 Alle Prozesse mit einem bestimmten Namen anzeigen:
-psgrep NAME
+pgrep NAME
 
 Ausgabe von pgrep chromium:
 314473
@@ -546,7 +546,7 @@ Status Anzeigen
 .NEWSLIDE
 .HEADING 1 "Übungsaufgabe: Eigener Systemd Service"
 .QUOTE
-Erstelle und starte mithilfe der Vorlage in /etc/systemd/test.service einen Service für den Befehl sleep infinity
+Erstelle und starte mithilfe der Vorlage in /etc/systemd/system/test.service einen Service für den Befehl sleep infinity
 .QUOTE OFF
 .QUOTE_LEFT
 .CENTER_BLOCK
@@ -640,10 +640,10 @@ box "System Timer" "test.timer" wid 2 ht 2
 # @root
 nano /etc/systemd/system/test.service
 [Unit]
-Description=Execute the BASH script /root/test.sh
+Description=test ausgeben
 
 [Service]
-Type=\*[BOLDER]oneshot\*[BOLDERX]
+Type=oneshot
 ExecStart=/usr/bin/echo "test"
 .QUOTE OFF
 .CENTER_BLOCK OFF
@@ -663,10 +663,10 @@ nano /etc/systemd/system/test.timer
 Description=Starte den Systemd Service test.service alle 10 Minuten
 
 [Timer]
-# OnCalendar=daily - Jeden Tag um 00:00 Uhr
-# OnCalendar=hourly - Jede volle Stunde
-# OnCalendar=2025-12-24 18:00:00 - Einmalig am 24. Dezember 2025 um 18:00 Uhr
-# OnCalendar=Fri 13:00:00 - Jeden Freitag um 13:00 Uhr
+# OnCalendar=daily # Jeden Tag um 00:00 Uhr
+# OnCalendar=hourly # Jede volle Stunde
+# OnCalendar=2025-12-24 18:00:00 # Einmalig am 24. Dezember 2025 um 18:00 Uhr
+# OnCalendar=Fri 13:00:00 # Jeden Freitag um 13:00 Uhr
 OnCalendar=*:0/10:*
 Persistent=true
 
@@ -695,6 +695,7 @@ Wenn eine Unit Konfigurationsdatei verändert wurde: Systemd Neustarten
 Timer aktivieren
 @root
 \*[BOLDER]systemctl enable NAME.timer\*[BOLDERX]
+\*[BOLDER]systemctl start NAME.timer\*[BOLDERX]
 .QUOTE OFF
 .CENTER_BLOCK OFF
 .QUOTE_CENTER
@@ -723,6 +724,7 @@ crontab -e
 systemctl list-timers
 systemctl daemon-reload
 systemctl enable NAME.timer
+systemctl eingabe NAME.timer
 .QUOTE OFF
 .CENTER_BLOCK OFF
 .QUOTE_CENTER
@@ -1258,16 +1260,46 @@ Die \*[BOLDER]nächsten Nachmittage\*[BOLDERX] stehen dafür zur Verfügung
 Logging ist das automatische Aufzeichnen von Ereignissen, Abläufen oder Fehlern
 in einem System, um deren Verhalten nachvollziehen und analysieren zu können.
 .QUOTE OFF
+.QUOTE
+Log Dateien befinden sich in /log
+.QUOTE OFF
 .BOX PIC
 .PS
-box "Kernel" wid 2
-arrow down from last box.b; box "Hardwareinformation" "dmesg" wid 2 ht 1
+box "Klartext" wid 2
+arrow down from last box.b; box "cat /var/log/..." "tail -f /var/log/..." wid 2 ht 1
 move up 1.75 right 1.5
-box "Service" wid 2
-arrow down from last box.b; box "Prozessinformationen" "journalctl" wid 2 ht 1
+box "Binär / DB" wid 2
+arrow down from last box.b; box "Spezielle Software" "last -f btmp / wtmp" wid 2 ht 1
 move up 1.75 right 1.5
-box "Global" wid 2
-arrow down from last box.b; box "Custom Logging" "/var/log" wid 2 ht 1
+box "Journal" wid 2
+arrow down from last box.b; box "journalctl" "journalctl -u UNIT" wid 2 ht 1
 .PE
+.BOX OFF
+.\": }}}
+.
+.\": Die wichtigsten Logdateien {{{
+.NEWSLIDE
+.HEADING 1 "Die wichtigsten Logdateien"
+.BOX TS
+.TS
+box center nospaces tab(|);
+lB | lB
+- -
+l | l.
+Logdatei (mit Pfad)             | Zweck
+/var/log/syslog                 | Allgemeine Systemmeldungen (Dienste, Kernel, Cron, Netzwerk)
+/var/log/auth.log               | Authentifizierungsversuche, sudo, ssh-Logins
+/var/log/wtmp                   | Binärlog: Anmeldungen, Neustarts, Runlevel-Änderungen
+/var/log/btmp                   | Binärlog: Fehlgeschlagene Loginversuche
+/var/log/lastlog                | Binärlog: Letzte erfolgreiche Anmeldung jedes Nutzers
+/var/log/faillog                | Binärlog: Fehlgeschlagene Logins pro Benutzer
+/var/log/apt/history.log        | Chronik von Paketinstallationen über apt
+/var/log/apt/term.log           | Terminalausgaben von apt
+.TE
+.QUOTE
+Viele Logdateien enthalten ähnliche Informationen. Je nach Quelle – etwa
+Kernel, Hardware oder Systemdienste – unterscheiden sie sich vor allem im
+Detailgrad und Kontext der protokollierten Ereignisse.
+.QUOTE OFF
 .BOX OFF
 .\": }}}
