@@ -1328,3 +1328,152 @@ Detailgrad und Kontext der protokollierten Ereignisse.
 .QUOTE OFF
 .BOX OFF
 .\": }}}
+.
+.\": Die wichtigsten Logdateien {{{
+.NEWSLIDE
+.HEADING 1 "Die wichtigsten Logdateien"
+.BOX TS
+.TS
+box center nospaces tab(|);
+lB | lB
+- -
+l | l.
+Logdatei (mit Pfad)             | Zweck
+/var/log/syslog                 | Allgemeine Systemmeldungen (Dienste, Kernel, Cron, Netzwerk)
+/var/log/auth.log               | Authentifizierungsversuche, sudo, ssh-Logins
+/var/log/wtmp                   | Binärlog: Anmeldungen, Neustarts, Runlevel-Änderungen
+/var/log/btmp                   | Binärlog: Fehlgeschlagene Loginversuche
+/var/log/lastlog                | Binärlog: Letzte erfolgreiche Anmeldung jedes Nutzers
+/var/log/faillog                | Binärlog: Fehlgeschlagene Logins pro Benutzer
+/var/log/apt/history.log        | Chronik von Paketinstallationen über apt
+/var/log/apt/term.log           | Terminalausgaben von apt
+.TE
+.QUOTE
+Viele Logdateien enthalten ähnliche Informationen. Je nach Quelle – etwa
+Kernel, Hardware oder Systemdienste – unterscheiden sie sich vor allem im
+Detailgrad und Kontext der protokollierten Ereignisse.
+.QUOTE OFF
+.BOX OFF
+.\": }}}
+.
+.\": Rsyslog Server {{{
+.NEWSLIDE
+.HEADING 1 "Rsyslog Server"
+.QUOTE
+Rsyslog sammelt Log Dateien von Geräten aus dem Netzwerk
+.QUOTE OFF
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK ADJUST -1
+# @root - Alle Befehle
+apt install rsyslog # (systemctl status rsyslog)
+
+nano /etc/rsyslog.conf # Am besten .d Ornder
+module(load="imtcp")
+input(type="imtcp" port="514")
+
+nano /etc/rsyslog.d/10-remote.conf
+$template RemoteLogs,"/var/log/remote/%HOSTNAME%/%PROGRAMNAME%.log"
+*.* ?RemoteLogs
+& stop
+
+systemctl restart rsyslog
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Rsyslog Client {{{
+.NEWSLIDE
+.HEADING 1 "Rsyslog Client"
+.QUOTE
+Rsyslog sammelt Log Dateien von Geräten aus dem Netzwerk
+.QUOTE OFF
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK
+# @root - Alle Befehle
+apt install rsyslog
+systemctl status rsyslog
+
+nano /etc/rsyslog.d/90-remote.conf # Am besten .d Ornder
+*.* @@192.0.2.10:514
+
+systemctl restart rsyslog
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.QUOTE
+\*[BOLDERX]Achtung: Logs werden gerade noch unverschlüsselt übertragen\*[BOLDERX]
+.QUOTE OFF
+.\": }}}
+.
+.\": Nachrichten zum Log hinzufügen {{{
+.NEWSLIDE
+.HEADING 1 "Nachrichten zum Log hinzufügen"
+.QUOTE
+mit dem logger Befehl Können wir Nachrichten zum Syslog hinzufügen
+.QUOTE OFF
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK
+logger "Hallo - Test"
+logger -p user.info "This is an info message"
+logger -p daemon.warning "A warning from daemon"
+
+logger -p <facility>.<level>
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Log facilitys {{{
+.NEWSLIDE
+.HEADING 1 "Log facilitys"
+.BOX TS
+.TS
+box center nospaces tab(|);
+lB | lB
+- -
+l | l.
+Facility    | Beschreibung
+auth        | Sicherheits-/Authentifizierungsnachrichten
+authpriv    | Private Authentifizierungsnachrichten
+cron        | Cron- und At-Dienst-Nachrichten
+daemon      | Sonstige Systemdienste
+kern        | Kernel-Nachrichten (nur vom Kernel)
+lpr         | Drucksystem
+mail        | E-Mail-System
+news        | Usenet-/Netzwerk-Nachrichten
+syslog      | Interne syslog-Nachrichten
+user        | Nachrichten auf Benutzerebene (Standard)
+uucp        | UUCP-System
+local0      | Zur lokalen Verwendung reserviert
+.TE
+.BOX OFF
+.
+.\": Log level {{{
+.NEWSLIDE
+.HEADING 1 "Log level"
+.SPACE 1
+.BOX TS
+.TS
+box center nospaces tab(|);
+lB | lB | lb
+- - -
+l | n | l.
+Level     | Nummer | Bedeutung
+emerg     | 0      | System unbenutzbar (Notfall)
+alert     | 1      | Sofortige Maßnahmen erforderlich
+crit      | 2      | Kritischer Zustand
+err       | 3      | Fehler
+warning   | 4      | Warnung
+notice    | 5      | Wichtige, normale Information
+info      | 6      | Allgemeine Information
+debug     | 7      | Debug-Informationen
+.TE
+.BOX OFF
+.\": }}}
