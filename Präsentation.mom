@@ -1141,15 +1141,18 @@ Logisches ODER      : $a -gt 0 || $b -gt 0  : $a -gt 0 -o $b -gt 0
 .TE
 .\": }}}
 .
+
 .\": Switch-Case für Argumente {{{
 .NEWSLIDE
 .HEADING 1 "Switch-Case für Argumente"
 .QUOTE_LEFT
 .CENTER_BLOCK
 .QUOTE
-.CODE BREAK
+.CODE BREAK ADJUST -1
 ${0} = Programm Name => test.sh
 ${1} = Ersten Argument usw.
+${*} = Alle Argumente
+${#} = Anzahl der Argumente
 
 case ${1} in
     hallo)
@@ -1329,31 +1332,27 @@ Detailgrad und Kontext der protokollierten Ereignisse.
 .BOX OFF
 .\": }}}
 .
-.\": Die wichtigsten Logdateien {{{
+.\": Rsyslog - Die Idee {{{
 .NEWSLIDE
-.HEADING 1 "Die wichtigsten Logdateien"
-.BOX TS
-.TS
-box center nospaces tab(|);
-lB | lB
-- -
-l | l.
-Logdatei (mit Pfad)             | Zweck
-/var/log/syslog                 | Allgemeine Systemmeldungen (Dienste, Kernel, Cron, Netzwerk)
-/var/log/auth.log               | Authentifizierungsversuche, sudo, ssh-Logins
-/var/log/wtmp                   | Binärlog: Anmeldungen, Neustarts, Runlevel-Änderungen
-/var/log/btmp                   | Binärlog: Fehlgeschlagene Loginversuche
-/var/log/lastlog                | Binärlog: Letzte erfolgreiche Anmeldung jedes Nutzers
-/var/log/faillog                | Binärlog: Fehlgeschlagene Logins pro Benutzer
-/var/log/apt/history.log        | Chronik von Paketinstallationen über apt
-/var/log/apt/term.log           | Terminalausgaben von apt
-.TE
-.QUOTE
-Viele Logdateien enthalten ähnliche Informationen. Je nach Quelle – etwa
-Kernel, Hardware oder Systemdienste – unterscheiden sie sich vor allem im
-Detailgrad und Kontext der protokollierten Ereignisse.
-.QUOTE OFF
+.HEADING 1 "Rsyslog - Die Idee"
+.SPACE 1
+.BOX PIC
+.PS
+C: ellipse "Rsyslog" "Zentrale Auswertung" wid 2 ht 1
+
+arrow up .8 from C.n; "Rsyslog Client" above
+arrow up right from C.ne; "IP/Telefon" ljust above
+arrow up left from C.nw; "Netzwerkhardware" rjust above
+
+arrow left .8 from C.w; "Container " rjust
+arrow right .8 from C.e; " Virtuelle Maschinen" ljust
+
+arrow down .8 from C.s; "Smart Geräte" below
+arrow down right from C.se; "Roboter" ljust below
+arrow down left from C.sw; "Sicherheitshardware" rjust below
+.PE
 .BOX OFF
+
 .\": }}}
 .
 .\": Rsyslog Server {{{
@@ -1367,7 +1366,7 @@ Rsyslog sammelt Log Dateien von Geräten aus dem Netzwerk
 .QUOTE
 .CODE BREAK ADJUST -1
 # @root - Alle Befehle
-apt install rsyslog # (systemctl status rsyslog)
+apt install rsyslog # (systemctl status rsyslog) = sollte laufen
 
 nano /etc/rsyslog.conf # Am besten .d Ornder
 module(load="imtcp")
@@ -1388,7 +1387,7 @@ systemctl restart rsyslog
 .NEWSLIDE
 .HEADING 1 "Rsyslog Client"
 .QUOTE
-Rsyslog sammelt Log Dateien von Geräten aus dem Netzwerk
+Sendet Log Dateien an Server aus dem Netzwerk
 .QUOTE OFF
 .QUOTE_LEFT
 .CENTER_BLOCK
@@ -1396,7 +1395,7 @@ Rsyslog sammelt Log Dateien von Geräten aus dem Netzwerk
 .CODE BREAK
 # @root - Alle Befehle
 apt install rsyslog
-systemctl status rsyslog
+systemctl status rsyslog (sollte laufen)
 
 nano /etc/rsyslog.d/90-remote.conf # Am besten .d Ornder
 *.* @@192.0.2.10:514
@@ -1416,11 +1415,13 @@ systemctl restart rsyslog
 .QUOTE
 mit dem logger Befehl Können wir Nachrichten zum Syslog hinzufügen
 .QUOTE OFF
+.SPACE 1
 .QUOTE_LEFT
 .CENTER_BLOCK
 .QUOTE
 .CODE BREAK
 logger "Hallo - Test"
+
 logger -p user.info "This is an info message"
 logger -p daemon.warning "A warning from daemon"
 
@@ -1477,3 +1478,55 @@ debug     | 7      | Debug-Informationen
 .TE
 .BOX OFF
 .\": }}}
+.
+.\": Logs automatisch Löschen {{{
+.NEWSLIDE
+.HEADING 1 "Logs automatisch Löschen"
+.QUOTE
+Wenn wir Logs nicht automatisch rotieren (also alte Logs löschen oder archivieren),
+wird unser System irgendwann aufgrund von zu wenig Speicher nichtmehr funktionieren
+.QUOTE OFF
+.QUOTE
+logrotate = Service, der alte Logs rotiert
+.QUOTE OFF
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK ADJUST -1
+# @root - Alle Befehle
+apt install logrotate # (systemctl status logrotate) = sollte laufen
+
+nano /etc/logrotate.conf # (systemctl restart logrotate)
+# rotate log files weekly
+weekly
+# keep 4 weeks worth of backlogs
+rotate 4
+# create new (empty) log files after rotating old ones
+create
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Erste Hilfe bei Fehlern unter Linux {{{
+.NEWSLIDE
+.HEADING 1 "Erste Hilfe bei Fehlern unter Linux"
+.SPACE 1
+.LIST DIGIT
+.ITEM 10p
+Zeige aktuelle Systemfehler mit journalctl -xe oder journalctl -u SERVICE an
+.ITEM 10p
+Durchsuche Logdateien mit grep -r -f error warning /var/log nach Fehlern
+.ITEM 10p
+Starte Programme mit --debug oder -vv, um mehr Details zu sehen.
+.ITEM 10p
+Prüfe Dienste mit systemctl status dienstname.
+.ITEM 10p
+Zeige Dateiberechtigungen mit ls -l /pfad/zur/datei an.
+.ITEM 10p
+Teste die Netzwerkverbindung mit ping -c 4 1.1.1.1.
+.ITEM 10p
+Suche Hardwarefehler mit dmesg | grep -i error.
+.LIST OFF
+.\": }}}
+
