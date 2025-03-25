@@ -1206,6 +1206,31 @@ done
 .QUOTE_CENTER
 .\": }}}
 .
+.\": Übungsaufgabe: Interaktives Skript mit Argumenten {{{
+.NEWSLIDE
+.HEADING 1 "Übungsaufgabe: Interaktives Skript mit Argumenten"
+.LIST DIGIT
+.ITEM 10p
+Brich das Skript bei Fehlern, nicht gesetzten Variablen oder Pipe-Fehlern ab
+.ITEM 10p
+Frage den Benutzer nach seinem Namen mit read
+.ITEM 10p
+Speichere das aktuelle Datum, die Uhrzeit und den Hostnamen in Variablen
+.ITEM 10p
+Begrüße den Benutzer mit einer Nachricht wie „Hallo NAME auf HOST!“
+.ITEM 10p
+Schreibe Name, Datum, Uhrzeit und Hostname in eine Logdatei
+.ITEM 10p
+Gib bei Benutzernamen azubi zusätzlich Umgebungsvariablen wie $HOME und $SHELL aus
+.ITEM 10p
+Erstelle ein Array mit drei zufälligen Hinweisen und gib sie mit einer for-Schleife aus
+.ITEM 10p
+Verarbeite alle übergebenen Argumente ($1, $2, …) mit einer while-Schleife und shift
+.ITEM 10p
+Nutze case, um bei Argumenten wie --debug oder --help passende Ausgaben zu machen
+.LIST OFF
+.\": }}}
+.
 .\": Übungsaufgabe: Eigenes Bash Skript {{{
 .NEWSLIDE
 .HEADING 1 "Übungsaufgabe: Eigenes Bash Skript"
