@@ -1565,8 +1565,7 @@ ankommen.
 .ITEM 10p
 Konfiguriert gemeinsam rsyslog so, dass alle Lognachrichten über TCP an den
 Rechner des Partners übertragen werden (Port 514, TLS nicht erforderlich).
-Erstellt gemeinsam eine Logrotate-Konfigurationsdatei unter
-/etc/logrotate.d/custom für /var/log/custom.log, sodass die Datei alle 2 Wochen
+Erstellt gemeinsam eine Logrotate-Konfigurationsdatei, sodass die Datei alle 2 Wochen
 rotiert wird.
 .ITEM 10p
 Konfiguriert gemeinsam rsyslog so, dass alle Lognachrichten über TCP an den
