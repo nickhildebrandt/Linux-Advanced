@@ -1141,7 +1141,6 @@ Logisches ODER      : $a -gt 0 || $b -gt 0  : $a -gt 0 -o $b -gt 0
 .TE
 .\": }}}
 .
-
 .\": Switch-Case für Argumente {{{
 .NEWSLIDE
 .HEADING 1 "Switch-Case für Argumente"
@@ -1330,6 +1329,24 @@ Kernel, Hardware oder Systemdienste – unterscheiden sie sich vor allem im
 Detailgrad und Kontext der protokollierten Ereignisse.
 .QUOTE OFF
 .BOX OFF
+.\": }}}
+.
+.\": Übungsaufgabe: Logs auslesen und durchsuchen {{{
+.NEWSLIDE
+.HEADING 1 "Übungsaufgabe: Logs auslesen und durchsuchen"
+.SPACE 1
+.LIST DIGIT
+.ITEM 10p
+Lies mit journalctl -b das Log des aktuellen Bootvorgangs aus und beschreibe, was angezeigt wird.
+.ITEM 10p
+Zeige mit journalctl -k alle Kernelmeldungen an und erkläre, woran du sie erkennst.
+.ITEM 10p
+Finde mit journalctl -u ssh alle Logeinträge des SSH-Dienstes.
+.ITEM 10p
+Durchsuche mit journalctl | grep -i failed das Journal nach fehlgeschlagenen Aktionen.
+.ITEM 10p
+Zeige mit systemctl list-units --failed alle fehlgeschlagenen systemd-Units an.
+.LIST OFF
 .\": }}}
 .
 .\": Rsyslog - Die Idee {{{
@@ -1527,6 +1544,34 @@ Zeige Dateiberechtigungen mit ls -l /pfad/zur/datei an.
 Teste die Netzwerkverbindung mit ping -c 4 1.1.1.1.
 .ITEM 10p
 Suche Hardwarefehler mit dmesg | grep -i error.
+.LIST OFF
+.\": }}}
+.
+.\":  {{{
+.NEWSLIDE
+.HEADING 1 "Erste Hilfe bei Fehlern unter Linux"
+.LIST DIGIT
+.ITEM 10p
+Konfiguriert gemeinsam rsyslog so, dass alle Lognachrichten über TCP an den
+Rechner des Partners übertragen werden (Port 514, TLS nicht erforderlich).
+.ITEM 10p
+Konfiguriert gemeinsam rsyslog so, dass alle Lognachrichten über TCP an den
+Rechner des Partners übertragen werden (Port 514, TLS nicht erforderlich).
+Verwendet auf dem sendenden Rechner den Befehl logger mit verschiedenen
+Facilities und Loglevels (z. B. -p local0.info, -p authpriv.warning) und
+überprüft auf dem empfangenden Rechner, ob die Nachrichten korrekt im Syslog
+ankommen.
+.ITEM 10p
+Konfiguriert gemeinsam rsyslog so, dass alle Lognachrichten über TCP an den
+Rechner des Partners übertragen werden (Port 514, TLS nicht erforderlich).
+Erstellt gemeinsam eine Logrotate-Konfigurationsdatei unter
+/etc/logrotate.d/custom für /var/log/custom.log, sodass die Datei alle 2 Wochen
+rotiert wird.
+.ITEM 10p
+Konfiguriert gemeinsam rsyslog so, dass alle Lognachrichten über TCP an den
+Rechner des Partners übertragen werden (Port 514, TLS nicht erforderlich).
+Testet eure Konfiguration mit logrotate --debug /etc/logrotate.d/custom und
+überprüft, ob sie fehlerfrei funktioniert.
 .LIST OFF
 .\": }}}
 
