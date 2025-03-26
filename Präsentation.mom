@@ -1472,6 +1472,7 @@ uucp        | UUCP-System
 local0      | Zur lokalen Verwendung reserviert
 .TE
 .BOX OFF
+.\": }}}
 .
 .\": Log level {{{
 .NEWSLIDE
@@ -1547,9 +1548,9 @@ Suche Hardwarefehler mit dmesg | grep -i error.
 .LIST OFF
 .\": }}}
 .
-.\":  {{{
+.\":  Übungsaufgabe: Remote Logging{{{
 .NEWSLIDE
-.HEADING 1 "Erste Hilfe bei Fehlern unter Linux"
+.HEADING 1 "Übungsaufgabe: Remote Logging"
 .LIST DIGIT
 .ITEM 10p
 Konfiguriert gemeinsam rsyslog so, dass alle Lognachrichten über TCP an den
@@ -1574,4 +1575,3 @@ Testet eure Konfiguration mit logrotate --debug /etc/logrotate.d/custom und
 überprüft, ob sie fehlerfrei funktioniert.
 .LIST OFF
 .\": }}}
-
