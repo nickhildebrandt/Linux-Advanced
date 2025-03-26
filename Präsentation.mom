@@ -535,7 +535,7 @@ Service starten
 # @root
 \*[BOLDER]systemctl start NAME.service\*[BOLDERX]
 
-Status Anzeigen
+Status anzeigen
 \*[BOLDER]systemctl status NAME.service\*[BOLDERX]
 .QUOTE OFF
 .CENTER_BLOCK OFF
@@ -1369,7 +1369,6 @@ arrow down right from C.se; "Roboter" ljust below
 arrow down left from C.sw; "Sicherheitshardware" rjust below
 .PE
 .BOX OFF
-
 .\": }}}
 .
 .\": Rsyslog Server {{{
@@ -1575,19 +1574,372 @@ Testet eure Konfiguration mit logrotate --debug /etc/logrotate.d/custom und
 .LIST OFF
 .\": }}}
 .
-.\":  Mini Exkurs: Windows und Mulimedia unter Linux {{{
+.\":  Netzwerkgrundlagen {{{
 .NEWSLIDE
-.HEADING 1 "Mini Exkurs: Windows und Mulimedia unter Linux"
+.HEADING 1 "Netzwerkgrundlagen"
+.SPACE 1
+.BOX PIC
+.PS
+C: ellipse "Netzwerk" wid 2
+
+arrow up .8 from C.n; "IPv4/IPv6" above
+arrow up right from C.ne; "DHCP" ljust above
+arrow up left from C.nw; "DNS" rjust above
+
+arrow left .8 from C.w; "ping " rjust
+arrow right .8 from C.e; " sockets" ljust
+
+arrow down .8 from C.s; "TCP/UDP" below
+arrow down right from C.se; "Interfaces" ljust below
+arrow down left from C.sw; "OSI-Modell" rjust below
+.PE
+.BOX OFF
+.\": }}}
+.
+.\": Statusinformationen anzeigen {{{
+.NEWSLIDE
+.HEADING 1 "Statusinformationen anzeigen"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK
+# Aktuelle IP-Adressen (IPv4 und IPv6) für alle Interfaces anzeigen
+ip address show
+
+# Routing-Tabelle inklusive Metric anzeigen
+ip route show
+
+# Aktive Netzwerkverbindungen und Ports (ähnlich wie netstat)
+ss -tulnp # ss = Moderne Alternative zu netstat
+
+# Verbindung Schließen
+kill (-9) PID_AUS_SS
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Netzwerkverbindung Testen {{{
+.NEWSLIDE
+.HEADING 1 "Netzwerkverbindung Testen"
+.QUOTE
+Wenn man einen Ping über das Netzwerk senden kann und der Zielrechner
+eine Antwort zurückschickt, zeigt das, dass die Konfiguration korrekt
+funktioniert. ICMP (Ping) wird in manchen Netzwerken blockiert – in solchen
+Fällen kann man sich damit behelfen, eine Webseite per HTTP herunterzuladen.
+.QUOTE OFF
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK
+# ICMP Ping senden
+ping google.de
+ping 1.1.1.1
+
+# HTTP Request (Webseite Herunterladen)
+wget google.de
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Hostname Konfiguration {{{
+.NEWSLIDE
+.HEADING 1 "Hostname Konfiguration"
+.QUOTE
+Der Hostname gibt den Namen des Rechners innerhalb des lokalen Netzwerks an
+.QUOTE OFF
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK
+# @root
+nano /etc/hostname
+MEIN_NAME
+
+# Hostname anzeigen
+hostname
+
+# Hostname für Netzwerke anzeigen
+getent hosts
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": DNS Server Konfiguration {{{
+.NEWSLIDE
+.HEADING 1 "DNS Server Konfiguration"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK ADJUST -1
+# @root
+nano /etc/resolv.conf
+nameserver 1.1.1.1
+nameserver 8.8.8.8
+
+# DNS Server Testen
+dig google.de
+
+# IP adresse für Domain
+nslookup google.dein
+
+# Reverse-lookup - Domain für IP
+host 1.1.1.1
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Statische Hostname Auflösung {{{
+.NEWSLIDE
+.HEADING 1 "Statische Hostname Auflösung"
+.QUOTE
+Wenn dem DNS-Server der Name, z. B. 'vpn', eines lokalen Rechners nicht bekannt
+ist, kann man in der Hosts-Datei für jede IP-Adresse einen Hostnamen und eine
+Domain-Konfiguration eintragen und so auch im lokalen Netzwerk Namen anstelle
+von IP-Adressen verwenden – ganz ohne eigenen DNS-Server.
+.QUOTE OFF
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK
+# @root
+nano /etc/hosts
+
+127.0.0.1       localhost
+127.0.1.1       pc-nh2.ts13.lan pc-nh2
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Netzwerk Frontends {{{
+.NEWSLIDE
+.HEADING 1 "Netzwerk Frontends"
+.SPACE 1
+.BOX PIC
+.PS
+Start: box "ip Befehl" wid 2
+arrow down 1 left 1.5 from Start.b; box "ifup/down" "/etc/network/interfaces" wid 2.5 ht 1
+arrow down 1 from Start.b; box "Network Manager" "nmtui/nmcli" wid 2.5 ht 1
+arrow down 1 right 1.5 from Start.b; box "Systemd Networkd" "Network Units" wid 2.5 ht 1
+.PE
+.BOX OFF
+.\": }}}
+.
+.\": ifup/down IPv4 über DHCP (Standard) {{{
+.NEWSLIDE
+.HEADING 1 "ifup/down IPv4 über DHCP (Standard)"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK ADJUST -1
+# @root
+nano /etc/network/interfaces
+
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet dhcp
+
+# Netzwerk Neustarten und Konfiguration einlesen
+systemctl restart networking.service
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": ifup/down IPv4 über feste IP {{{
+.NEWSLIDE
+.HEADING 1 "ifup/down IPv4 über feste IP"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK ADJUST -1
+# @root
+nano /etc/network/interfaces
+
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet static
+    address 192.168.1.10
+    netmask 255.255.255.0
+
+# Netzwerk Neustarten und Konfiguration einlesen
+systemctl restart networking.service
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Interfaces an- und ausschalten {{{
+.NEWSLIDE
+.HEADING 1 "Interfaces an- und ausschalten"
+.QUOTE
+Wenn das Netzwerkinterface heruntergefahren wird, sind keine Verbindungen mehr
+möglich. Wird es gestartet, wird die aktuelle Konfiguration aus
+/etc/network/interfaces geladen.
+.QUOTE OFF
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK ADJUST -1
+# @root
+
+# Interface anschalten
+ifup INTERFACENAME
+
+# Interface ausschalten
+ifdown INTERFACENAME
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Übungsaufgabe: Netzwerkbefehle {{{
+.NEWSLIDE
+.HEADING 1 "Übungsaufgabe: Netzwerkbefehle"
+.LIST DIGIT
+.ITEM 10p
+Zeige die aktuellen IP-Adressen (IPv4 und IPv6) und Routing-Tabelle an
+.ITEM 10p
+Liste alle aktiven Netzwerkverbindungen und zugehörige Ports auf
+.ITEM 10p
+Prüfe die Erreichbarkeit von google.de per ICMP (Ping) und HTTP
+.ITEM 10p
+Ändere den Hostnamen des Systems dauerhaft in /etc/hostname und zeige in an
+.ITEM 10p
+Trage den DNS-Server 1.1.1.1 in die Resolver-Konfiguration ein
+.ITEM 10p
+Ermittle die IP-Adresse einer Domain per nslookup und führe einen Reverse-Lookup durch
+.ITEM 10p
+Löse die IP-Adresse deines Banknachbarn über den Hostnamen nachbar.sepe.local auf
+.ITEM 10p
+Konfiguriere ein Interface mit statischer IP und danach wieder mit DHCP in der interfaces-Datei
+.ITEM 10p
+Aktiviere und Deaktiviere ein Netzwerkinterface manuell
+.LIST OFF
+.\": }}}
+.
+.\": SSH - Die Idee {{{
+.NEWSLIDE
+.HEADING 1 "SSH - Die Idee"
+.QUOTE
+SSH steht für Secure Shell und ermöglicht die sichere, verschlüsselte
+Fernsteuerung und Datenübertragung zwischen Computern über ein Netzwerk
+.QUOTE OFF
+.BOX PIC
+.PS
+box "SSH Client" "" "Tastatureingaben" "" "Ausgabe" wid 2.5 ht 2
+arrow right 3 "Verschlüsselt" "Passwort oder Schlüsseldatei"
+box "SSH Server (sshd)" "" "Ausführen der Befehle" "" "Terminal läuft hier" wid 2.5 ht 2
+.PE
+.BOX OFF
+.\": }}}
+.
+.\": SSH Server installieren {{{
+.NEWSLIDE
+.HEADING 1 "SSH Server installieren"
+.QUOTE
+Das Paket openssh-server bringt nur den SSH-Server mit. Möchte man auch auf
+andere Computer per SSH zugreifen, muss zusätzlich das Paket openssh-client
+installiert werden.
+.QUOTE OFF
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK ADJUST -1
+# @root
+
+apt install openssh-server
+
+systemctl enable sshd
+systemctl start sshd
+
+systemctl status sshd
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": SSH Server konfigurieren {{{
+.NEWSLIDE
+.HEADING 1 "SSH Server konfigurieren"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK ADJUST -1
+# @root
+nano /etc/ssh/ssh_config # (systemctl restart sshd)
+Port 22
+ListenAddress 0.0.0.0
+
+# Authentication:
+PermitRootLogin prohibit-password
+StrictModes yes
+MaxAuthTries 3
+MaxSessions 2
+PubkeyAuthentication yes
+
+PermitTunnel no
+X11Forwarding no
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": SSH Verbindung aufbauen und Dateien kopieren {{{
+.NEWSLIDE
+.HEADING 1 "SSH Verbindung aufbauen und Dateien kopieren"
+.QUOTE_LEFT
+.CENTER_BLOCK
+.QUOTE
+.CODE BREAK ADJUST -1
+# Mit dem SSH Server Terminal verbinden
+ssh ZIEL_BENUTZER@ZIEL_HOST
+
+# Dateien von Client zu Server kopieren
+scp DATEI ZIEL_BENUTZER@ZIEL_HOST:/PFAD
+
+# Ordner vom Client and Server kopieren
+scp -r DATEI ZIEL_BENUTZER@ZIEL_HOST:/PFAD
+
+# Dateien von Server zu Client kopieren
+scp ZIEL_BENUTZER@ZIEL_HOST:/PFAD SPEICHERORT
+
+# Ordner vom Client and Server kopieren
+scp -r ZIEL_BENUTZER@ZIEL_HOST:/PFAD SPEICHERORT
+.QUOTE OFF
+.CENTER_BLOCK OFF
+.QUOTE_CENTER
+.\": }}}
+.
+.\": Übungsaufgabe: SSH {{{
+.NEWSLIDE
+.HEADING 1 "Übungsaufgabe: SSH"
 .SPACE 1
 .LIST DIGIT
 .ITEM 10p
-Versuche, Steam als DEB-Paket zu installieren, dich anzumelden und Proton
-(Wine, DXVK) für alle Titel zu aktivieren, um eine Multimedia-Anwendung, die
-eigentlich nur unter Windows läuft, zum Laufen zu bringen.
+Installiere über apt das Paket openssh-server und stelle sicher, dass der
+SSH-Dienst über systemd gestartet wird und läuft
 .ITEM 10p
-Durchsuche das APT-Repository nach Multimedia-Paketen, Spielen,
-Grafiksimulationen etc., installiere interessante Anwendungen und probiere sie
-aus (z. B. SuperTuxKart – kann über das Netzwerk im Mehrspielermodus genutzt
-werden).
+Konfiguriere den SSH-Server so, dass Root-Verbindungen erlaubt sind und maximal
+3 fehlgeschlagene Anmeldeversuche sowie höchstens 2 gleichzeitige Verbindungen
+zugelassen werden.
+.ITEM 10p
+Schließe dich mit einem Partner zusammen und versucht, euch gegenseitig per SSH
+auf dem jeweils anderen Computer anzumelden und Befehle auszuführen.
+.ITEM 10p
+Kopiert anschließend Dateien und Ordner per scp von einem Computer auf den
+anderen
 .LIST OFF
 .\": }}}
+
