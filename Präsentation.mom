@@ -1574,3 +1574,20 @@ Testet eure Konfiguration mit logrotate --debug /etc/logrotate.d/custom und
 überprüft, ob sie fehlerfrei funktioniert.
 .LIST OFF
 .\": }}}
+.
+.\":  Mini Exkurs: Windows und Mulimedia unter Linux {{{
+.NEWSLIDE
+.HEADING 1 "Mini Exkurs: Windows und Mulimedia unter Linux"
+.SPACE 1
+.LIST DIGIT
+.ITEM 10p
+Versuche, Steam als DEB-Paket zu installieren, dich anzumelden und Proton
+(Wine, DXVK) für alle Titel zu aktivieren, um eine Multimedia-Anwendung, die
+eigentlich nur unter Windows läuft, zum Laufen zu bringen.
+.ITEM 10p
+Durchsuche das APT-Repository nach Multimedia-Paketen, Spielen,
+Grafiksimulationen etc., installiere interessante Anwendungen und probiere sie
+aus (z. B. SuperTuxKart – kann über das Netzwerk im Mehrspielermodus genutzt
+werden).
+.LIST OFF
+.\": }}}
