@@ -1878,7 +1878,7 @@ systemctl status sshd
 .QUOTE
 .CODE BREAK ADJUST -1
 # @root
-nano /etc/ssh/ssh_config # (systemctl restart sshd)
+nano /etc/ssh/sshd_config # (systemctl restart sshd)
 Port 22
 ListenAddress 0.0.0.0
 
@@ -1906,16 +1906,16 @@ X11Forwarding no
 # Mit dem SSH Server Terminal verbinden
 ssh ZIEL_BENUTZER@ZIEL_HOST
 
-# Dateien von Client zu Server kopieren
+# Dateien vom Client zum Server kopieren
 scp DATEI ZIEL_BENUTZER@ZIEL_HOST:/PFAD
 
-# Ordner vom Client and Server kopieren
+# Ordner vom Client zum Server kopieren
 scp -r DATEI ZIEL_BENUTZER@ZIEL_HOST:/PFAD
 
-# Dateien von Server zu Client kopieren
+# Dateien vom Server zum Client kopieren
 scp ZIEL_BENUTZER@ZIEL_HOST:/PFAD SPEICHERORT
 
-# Ordner vom Client and Server kopieren
+# Ordner vom Server zum Client kopieren
 scp -r ZIEL_BENUTZER@ZIEL_HOST:/PFAD SPEICHERORT
 .QUOTE OFF
 .CENTER_BLOCK OFF
